@@ -116,10 +116,54 @@ describe('App.js', () => {
                                 comment_count: expect.any(Number)
                             });
 
+                            expect(article).toMatchObject({
+                                title: 'Eight pug gifs that remind me of mitch',
+                                topic: 'mitch',
+                                author: 'icellusedkars',
+                                body: 'some gifs',
+                                created_at: '2020-11-03T00:00:00.000Z',
+                                votes: 0,
+                                comment_count: 2
+                            })
 
                         });
 
 
+                });
+
+                it('Should return 404 Not Found when the article_id is valid type, but doesn\'t return an article', () => {
+
+                    const articleId = 99999
+                    return request(app)
+                        .get(`/api/articles/${articleId}`)
+                        .expect(404)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+
+                            expect(message).toBe("Not Found")
+
+                        });
+                });
+
+
+                it('Should return 400 Invalid Request when the article_id is an invalid type', () => {
+
+                    const articleId = "wrong"
+                    return request(app)
+                        .get(`/api/articles/${articleId}`)
+                        .expect(400)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+
+                            expect(message).toBe("Invalid Request")
+
+                        });
                 });
 
             });
