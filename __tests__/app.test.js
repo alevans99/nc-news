@@ -83,4 +83,50 @@ describe('App.js', () => {
 
     });
 
+    describe('api/articles', () => {
+
+
+        describe('/api/articles/:article_id', () => {
+
+            describe('GET', () => {
+
+
+                it('Should respond with status 200 and the article object matching the ID', () => {
+
+                    const articleId = 3
+                    return request(app)
+                        .get(`/api/articles/${articleId}`)
+                        .expect(200)
+                        .then(({
+                            body: {
+                                article
+                            }
+                        }) => {
+
+                            expect(Object.keys(article)).toHaveLength(8)
+
+                            expect(article).toMatchObject({
+                                author: expect.any(String),
+                                title: expect.any(String),
+                                article_id: expect.any(Number),
+                                body: expect.any(String),
+                                topic: expect.any(String),
+                                created_at: expect.any(String),
+                                votes: expect.any(Number),
+                                comment_count: expect.any(Number)
+                            });
+
+
+                        });
+
+
+                });
+
+            });
+
+        });
+
+
+    });
+
 });
