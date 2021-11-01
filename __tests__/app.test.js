@@ -44,7 +44,41 @@ describe('App.js', () => {
 
 
         });
+    });
 
+
+    describe('api/topics', () => {
+
+        describe('GET', () => {
+
+            it('Should return status code 200 and a list of all topics when successful', () => {
+
+                return request(app)
+                    .get("/api/topics")
+                    .expect(200)
+                    .then(({
+                        body: {
+                            topics
+                        }
+                    }) => {
+
+                        expect(topics).toHaveLength(3);
+                        topics.forEach((topic) => {
+                            expect(Object.keys(topic)).toHaveLength(2)
+
+                            expect(topic).toMatchObject({
+                                slug: expect.any(String),
+                                description: expect.any(String)
+                            });
+                        })
+
+
+                    });
+
+            });
+
+
+        });
 
 
     });

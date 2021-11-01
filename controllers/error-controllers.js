@@ -1,5 +1,6 @@
 exports.handleCustomErrors = (err, req, res, next) => {
-    console.log(err);
+
+
     if (err.status && err.message) {
         res.status(err.status).send({
             message: err.message

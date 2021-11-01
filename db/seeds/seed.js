@@ -30,9 +30,6 @@ const seed = (data) => {
     })
     .then(() => {
 
-      console.log("Starting to insert users")
-
-
       const usersToInsert = userData.map(({
         username,
         name,
@@ -40,8 +37,6 @@ const seed = (data) => {
       }) => {
         return [username, name, avatar_url];
       })
-
-      console.log(usersToInsert)
 
       const insertUsers = format(`INSERT INTO users (username, name, avatar_url) VALUES %L;`,
         usersToInsert);
