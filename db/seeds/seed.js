@@ -76,7 +76,7 @@ const seed = (data) => {
         votes INTEGER DEFAULT 0,
         topic VARCHAR(255) NOT NULL REFERENCES topics(slug),
         author VARCHAR(255) NOT NULL REFERENCES users(username),
-        created_at DATE NOT NULL
+        created_at TIMESTAMP NOT NULL
       );`)
 
     })

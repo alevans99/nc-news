@@ -123,6 +123,141 @@ describe('App.js', () => {
 
             });
 
+
+            it('should sort by date by default', () => {
+
+                return request(app)
+                    .get(`/api/articles`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+
+                        expect(articles).toHaveLength(12)
+                        expect(articles).toBeSortedBy('created_at', {
+                            descending: true
+                        })
+                    });
+
+            });
+
+
+            it('Should take a sort_by query that allows choice of sorting column', () => {
+
+                return request(app)
+                    .get(`/api/articles?sort_by=author`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+
+                        expect(articles).toHaveLength(12)
+                        expect(articles).toBeSortedBy('author', {
+                            descending: true
+                        })
+                    });
+
+
+            });
+
+            it('Should take a order query that allows choice of sorting direction', () => {
+
+                return request(app)
+                    .get(`/api/articles?sort_by=title&order=asc`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+
+                        expect(articles).toHaveLength(12)
+                        expect(articles).toBeSortedBy('title')
+                    });
+
+
+            });
+
+            it('Should take a topic query that allows search by topic', () => {
+
+                return request(app)
+                    .get(`/api/articles?sort_by=title&order=asc&topic=cats`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+                        console.log(articles, 'search results')
+                        const filteredArticles = articles.filter((article) => {
+                            return article.topic === 'cats'
+                        })
+
+                        expect(articles).toEqual(filteredArticles)
+                    });
+
+
+            });
+
+            it('Should return 404 not found when search query has no results', () => {
+
+                return request(app)
+                    .get(`/api/articles?sort_by=title&order=asc&topic=wrong`)
+                    .expect(404)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toEqual("Not Found")
+                    });
+
+
+            });
+
+            it('Should reject sort queries which are not valid columns with status 400', () => {
+
+                return request(app)
+                    .get(`/api/articles?sort_by=wrong&order=asc`)
+                    .expect(400)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Invalid Request")
+
+                    });
+
+
+            });
+
+            it('Should reject order queries which are not valid columns with status 400', () => {
+
+                return request(app)
+                    .get(`/api/articles?sort_by=title&order=wrong`)
+                    .expect(400)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Invalid Request")
+
+                    });
+
+
+            });
+
+
+
         });
 
         describe('/api/articles/:article_id', () => {
@@ -160,7 +295,7 @@ describe('App.js', () => {
                                 topic: 'mitch',
                                 author: 'icellusedkars',
                                 body: 'some gifs',
-                                created_at: '2020-11-03T00:00:00.000Z',
+                                created_at: '2020-11-03T09:12:00.000Z',
                                 votes: 0,
                                 comment_count: 2
                             })
@@ -241,7 +376,7 @@ describe('App.js', () => {
                                 topic: 'mitch',
                                 author: 'icellusedkars',
                                 body: 'some gifs',
-                                created_at: '2020-11-03T00:00:00.000Z',
+                                created_at: '2020-11-03T09:12:00.000Z',
                                 votes: 1,
                                 comment_count: 2
                             })
@@ -283,7 +418,7 @@ describe('App.js', () => {
                                 topic: 'mitch',
                                 author: 'icellusedkars',
                                 body: 'some gifs',
-                                created_at: '2020-11-03T00:00:00.000Z',
+                                created_at: '2020-11-03T09:12:00.000Z',
                                 votes: -10,
                                 comment_count: 2
                             })

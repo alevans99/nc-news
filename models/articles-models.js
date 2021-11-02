@@ -2,15 +2,54 @@ const db = require('../db/connection.js');
 
 
 
-exports.selectArticles = async () => {
+exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) => {
+
+
+    const acceptedSortCriteria = [
+        'author',
+        'title',
+        'article_id',
+        'topic',
+        'created_at',
+        'votes',
+        'comment_count'
+    ]
+
+    const acceptedOrderCriteria = [
+        'ASC',
+        'DESC'
+    ]
+
+
+    if (!acceptedSortCriteria.includes(sortBy) || !acceptedOrderCriteria.includes(order.toUpperCase())) {
+
+        return Promise.reject({
+            status: 400,
+            message: "Invalid Request"
+        })
+
+    }
+    let topicQuery = ""
+    let topicParams = []
+
+    if (topic) {
+        topicQuery = `WHERE articles.topic = $1 `
+        topicParams.push(topic)
+    }
+
+    const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
+    LEFT JOIN comments ON articles.article_id = comments.article_id ${topicQuery} 
+    GROUP BY articles.article_id ORDER BY articles.${sortBy} ${order.toUpperCase()};`
+
+
+
 
     const {
         rows: articles
-    } = await db.query(`SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
-    LEFT JOIN comments ON articles.article_id = comments.article_id 
-    GROUP BY articles.article_id;`)
+    } = await db.query(queryString, topicParams)
 
-    console.log(articles)
+
+
     if (articles.length === 0 || !articles) {
         return Promise.reject({
             status: 404,

@@ -9,7 +9,15 @@ exports.getArticles = async (req, res, next) => {
 
     try {
 
-        const articles = await selectArticles()
+        const {
+            sort_by: sortBy,
+            order,
+            topic
+        } = req.query;
+
+
+
+        const articles = await selectArticles(sortBy, order, topic)
 
         res.status(200).send({
             articles
