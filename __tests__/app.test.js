@@ -86,6 +86,45 @@ describe('App.js', () => {
     describe('api/articles', () => {
 
 
+        describe('GET', () => {
+
+            it('should return an array of articles with status 200 when successful', () => {
+
+                return request(app)
+                    .get(`/api/articles`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+
+                        expect(articles).toHaveLength(12)
+
+                        articles.forEach((article) => {
+
+                            expect(Object.keys(article)).toHaveLength(8)
+
+                            expect(article).toMatchObject({
+                                author: expect.any(String),
+                                title: expect.any(String),
+                                article_id: expect.any(Number),
+                                body: expect.any(String),
+                                topic: expect.any(String),
+                                created_at: expect.any(String),
+                                votes: expect.any(Number),
+                                comment_count: expect.any(Number)
+                            });
+
+                        })
+
+                    });
+
+
+            });
+
+        });
+
         describe('/api/articles/:article_id', () => {
 
             describe('GET', () => {

@@ -1,6 +1,30 @@
 const db = require('../db/connection.js');
 
 
+
+exports.selectArticles = async () => {
+
+    const {
+        rows: articles
+    } = await db.query(`SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
+    LEFT JOIN comments ON articles.article_id = comments.article_id 
+    GROUP BY articles.article_id;`)
+
+    console.log(articles)
+    if (articles.length === 0 || !articles) {
+        return Promise.reject({
+            status: 404,
+            message: "Not Found"
+        })
+    }
+
+    return articles
+
+
+
+
+}
+
 exports.selectArticleById = async (id) => {
 
     if (!Number.isInteger(Number(id))) {
