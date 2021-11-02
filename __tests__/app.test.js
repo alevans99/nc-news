@@ -512,6 +512,43 @@ describe('App.js', () => {
 
                     });
 
+
+                    it('Should return 404 when no comments found', () => {
+
+                        const articleId = 300
+                        return request(app)
+                            .get(`/api/articles/${articleId}/comments`)
+                            .expect(404)
+                            .then(({
+                                body: {
+                                    message
+                                }
+                            }) => {
+
+                                expect(message).toBe("Not Found")
+
+                            });
+
+                    });
+
+                    it('Should return 400 status when an incorrect ID value type given', () => {
+
+                        const articleId = 'wrong'
+                        return request(app)
+                            .get(`/api/articles/${articleId}/comments`)
+                            .expect(400)
+                            .then(({
+                                body: {
+                                    message
+                                }
+                            }) => {
+
+                                expect(message).toBe("Invalid Request")
+
+                            });
+
+                    });
+
                 });
 
 
