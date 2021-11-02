@@ -192,7 +192,7 @@ describe('App.js', () => {
                             articles
                         }
                     }) => {
-                        console.log(articles, 'search results')
+
                         const filteredArticles = articles.filter((article) => {
                             return article.topic === 'cats'
                         })
@@ -469,6 +469,51 @@ describe('App.js', () => {
 
 
                 });
+
+            });
+
+
+            describe('/api/articles/:article_id/comments', () => {
+
+                describe('GET', () => {
+
+                    it('Should return the comments for an article when provided with the ID', () => {
+
+                        const articleId = 3
+                        return request(app)
+                            .get(`/api/articles/${articleId}/comments`)
+                            .expect(200)
+                            .then(({
+                                body: {
+                                    comments
+                                }
+                            }) => {
+
+
+                                comments.forEach((comment) => {
+
+                                    expect(Object.keys(comment)).toHaveLength(6)
+
+                                    expect(comment).toMatchObject({
+                                        comment_id: expect.any(Number),
+                                        author: expect.any(String),
+                                        body: expect.any(String),
+                                        article_id: expect.any(Number),
+                                        votes: expect.any(Number),
+                                        created_at: expect.any(String),
+                                    });
+
+                                    expect(comment.article_id).toBe(3)
+
+                                })
+
+
+                            });
+
+                    });
+
+                });
+
 
             });
 

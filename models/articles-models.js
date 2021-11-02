@@ -1,6 +1,32 @@
 const db = require('../db/connection.js');
 
 
+exports.selectCommentsByArticleId = async (id) => {
+
+    if (!Number.isInteger(Number(id))) {
+        return Promise.reject({
+            status: 400,
+            message: "Invalid Request"
+        })
+    }
+
+    const {
+        rows: comments
+    } = await db.query(`SELECT * FROM comments WHERE article_id = $1;`, [id])
+
+    if (!comments || comments.length === 0) {
+        return Promise.reject({
+            status: 404,
+            message: "Not Found"
+        })
+    }
+
+    return comments
+
+
+}
+
+
 
 exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) => {
 

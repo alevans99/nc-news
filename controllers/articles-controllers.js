@@ -1,8 +1,30 @@
 const {
     selectArticleById,
     updateArticleById,
-    selectArticles
+    selectArticles,
+    selectCommentsByArticleId
 } = require("../models/articles-models")
+
+
+exports.getCommentsByArticleId = async (req, res, next) => {
+
+    try {
+        const {
+            id
+        } = req.params;
+
+        const comments = await selectCommentsByArticleId(id)
+
+        res.status(200).send({
+            comments
+        })
+
+    } catch (err) {
+        next(err)
+    }
+
+
+}
 
 
 exports.getArticles = async (req, res, next) => {
@@ -31,13 +53,13 @@ exports.getArticles = async (req, res, next) => {
 
 
 exports.getArticleById = async (req, res, next) => {
-
-    const {
-        id
-    } = req.params;
-
-
     try {
+        const {
+            id
+        } = req.params;
+
+
+
         const article = await selectArticleById(id)
 
         res.status(200).send({
