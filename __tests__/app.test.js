@@ -359,6 +359,7 @@ describe('App.js', () => {
                             });
 
                             expect(article).toMatchObject({
+                                article_id: 3,
                                 title: 'Eight pug gifs that remind me of mitch',
                                 topic: 'mitch',
                                 author: 'icellusedkars',
