@@ -109,8 +109,6 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
     GROUP BY articles.article_id ORDER BY articles.${sortBy} ${order.toUpperCase()};`
 
 
-
-
     const {
         rows: articles
     } = await db.query(queryString, topicParams)
@@ -142,18 +140,14 @@ exports.selectArticleById = async (id) => {
         })
     }
 
-    const queries = [
-        db.query(`SELECT * FROM articles WHERE article_id = $1;`, [id]),
-        db.query(`SELECT COUNT(comment_id) FROM comments WHERE article_id = $1`, [id])
-    ]
+    const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
+    LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1
+    GROUP BY articles.article_id`
 
-    const [{
+    const {
         rows: [article]
-    }, {
-        rows: [{
-            count
-        }]
-    }] = await Promise.all(queries)
+    } = await db.query(queryString, [id])
+
 
     if (!article) {
         return Promise.reject({
@@ -162,7 +156,6 @@ exports.selectArticleById = async (id) => {
         })
     }
 
-    article['comment_count'] = Number(count)
 
     return article
 
