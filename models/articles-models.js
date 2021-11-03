@@ -37,7 +37,6 @@ exports.insertCommentToArticleId = async (id, username, body) => {
     VALUES ($1, $2, $3, $4) RETURNING *;`, [username, body, createdAt, id])
 
 
-    console.log(comment, "comment in model")
     return comment
 }
 

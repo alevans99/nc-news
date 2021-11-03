@@ -655,6 +655,27 @@ describe('App.js', () => {
 
                     });
 
+
+                    it('Should return 400 when an invalid article ID provided', () => {
+
+                        const articleId = "incorrect"
+                        return request(app)
+                            .post(`/api/articles/${articleId}/comments`).send({
+                                username: "butter_bridge",
+                                body: "body"
+                            })
+                            .expect(400)
+                            .then(({
+                                body: {
+                                    message
+                                }
+                            }) => {
+                                expect(message).toBe("Invalid Request")
+
+                            });
+
+                    });
+
                 });
 
             });

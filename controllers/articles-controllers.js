@@ -22,10 +22,11 @@ exports.postCommentToArticleId = async (req, res, next) => {
 
 
 
+
         //Check the body has the valid fields only
         if (Object.keys(req.body).length !== 2 ||
             (!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('body')) ||
-            (typeof username !== 'string' || typeof body !== 'string')) {
+            (typeof username !== 'string' || typeof body !== 'string' || isNaN(Number(id)))) {
 
             await Promise.reject({
                 status: 400,
