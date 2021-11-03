@@ -595,6 +595,65 @@ describe('App.js', () => {
                     });
 
 
+                    it('Should return 400 when an incorrect user is provided', () => {
+
+                        const articleId = 3
+                        return request(app)
+                            .post(`/api/articles/${articleId}/comments`).send({
+                                username: "doesnotexist",
+                                body: "A test comment"
+                            })
+                            .expect(400)
+                            .then(({
+                                body: {
+                                    message
+                                }
+                            }) => {
+                                expect(message).toBe("Invalid Request")
+
+                            });
+
+                    });
+
+                    it('Should return 400 when an incorrect body is provided', () => {
+
+                        const articleId = 3
+                        return request(app)
+                            .post(`/api/articles/${articleId}/comments`).send({
+                                username: "butter_bridge",
+                                body: 300
+                            })
+                            .expect(400)
+                            .then(({
+                                body: {
+                                    message
+                                }
+                            }) => {
+                                expect(message).toBe("Invalid Request")
+
+                            });
+
+                    });
+
+                    it('Should return 404 when an valid but non-existent article ID provided', () => {
+
+                        const articleId = 300
+                        return request(app)
+                            .post(`/api/articles/${articleId}/comments`).send({
+                                username: "butter_bridge",
+                                body: "body"
+                            })
+                            .expect(404)
+                            .then(({
+                                body: {
+                                    message
+                                }
+                            }) => {
+                                expect(message).toBe("Not Found")
+
+                            });
+
+                    });
 
                 });
 

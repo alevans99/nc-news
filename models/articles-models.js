@@ -4,17 +4,24 @@ const db = require('../db/connection.js');
 
 exports.insertCommentToArticleId = async (id, username, body) => {
 
+
     const {
-        rows: validUsers
-    } = await db.query('SELECT username FROM users;')
+        rows: validArticleCheck
+    } = await db.query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
 
-    const validUsernames = validUsers.map((user) => {
+    if (validArticleCheck.length !== 1) {
+        return Promise.reject({
+            status: 404,
+            message: "Not Found"
+        })
+    }
 
-        return user.username
-    })
 
+    const {
+        rows: validUserCheck
+    } = await db.query(`SELECT username FROM users WHERE username = $1;`, [username])
 
-    if (!Number.isInteger(Number(id)) || !validUsernames.includes(username)) {
+    if (!Number.isInteger(Number(id)) || validUserCheck.length !== 1) {
         return Promise.reject({
             status: 400,
             message: "Invalid Request"
@@ -30,7 +37,7 @@ exports.insertCommentToArticleId = async (id, username, body) => {
     VALUES ($1, $2, $3, $4) RETURNING *;`, [username, body, createdAt, id])
 
 
-
+    console.log(comment, "comment in model")
     return comment
 }
 
