@@ -552,7 +552,55 @@ describe('App.js', () => {
                 });
 
 
+                describe('POST', () => {
+
+                    it('Should return 201 and the new comment when successful', () => {
+
+                        const articleId = 3
+                        return request(app)
+                            .post(`/api/articles/${articleId}/comments`).send({
+                                username: "butter_bridge",
+                                body: "A test comment"
+                            })
+                            .expect(201)
+                            .then(({
+                                body: {
+                                    comment
+                                }
+                            }) => {
+
+
+                                expect(Object.keys(comment)).toHaveLength(6)
+
+                                expect(comment).toMatchObject({
+                                    comment_id: expect.any(Number),
+                                    author: expect.any(String),
+                                    body: expect.any(String),
+                                    article_id: expect.any(Number),
+                                    votes: expect.any(Number),
+                                    created_at: expect.any(String),
+                                });
+
+                                expect(comment.author).toBe('butter_bridge')
+                                expect(comment.body).toBe('A test comment')
+
+                                expect(comment.article_id).toBe(3)
+
+
+
+
+                            });
+
+
+                    });
+
+
+
+                });
+
             });
+
+
 
         });
 

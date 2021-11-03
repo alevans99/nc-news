@@ -2,8 +2,49 @@ const {
     selectArticleById,
     updateArticleById,
     selectArticles,
-    selectCommentsByArticleId
+    selectCommentsByArticleId,
+    insertCommentToArticleId
 } = require("../models/articles-models")
+
+
+exports.postCommentToArticleId = async (req, res, next) => {
+
+    try {
+
+        const {
+            id
+        } = req.params;
+
+        const {
+            username,
+            body
+        } = req.body
+
+
+
+        //Check the body has the valid fields only
+        if (Object.keys(req.body).length !== 2 ||
+            (!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('body')) ||
+            (typeof username !== 'string' || typeof body !== 'string')) {
+
+            await Promise.reject({
+                status: 400,
+                message: "Invalid Request"
+            })
+        }
+
+        const comment = await insertCommentToArticleId(id, username, body)
+
+        res.status(201).send({
+            comment
+        })
+
+
+    } catch (err) {
+        next(err)
+    }
+
+}
 
 
 exports.getCommentsByArticleId = async (req, res, next) => {
@@ -84,7 +125,7 @@ exports.patchArticleById = async (req, res, next) => {
         } = req.body
 
 
-        if (Object.keys(req.body).length > 1 && !Object.hasOwnProperty('inc_votes')) {
+        if (Object.keys(req.body).length !== 1 || !req.body.hasOwnProperty('inc_votes')) {
             await Promise.reject({
                 status: 400,
                 message: "Invalid Request"

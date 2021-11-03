@@ -1,6 +1,40 @@
 const db = require('../db/connection.js');
 
 
+
+exports.insertCommentToArticleId = async (id, username, body) => {
+
+    const {
+        rows: validUsers
+    } = await db.query('SELECT username FROM users;')
+
+    const validUsernames = validUsers.map((user) => {
+
+        return user.username
+    })
+
+
+    if (!Number.isInteger(Number(id)) || !validUsernames.includes(username)) {
+        return Promise.reject({
+            status: 400,
+            message: "Invalid Request"
+        })
+    }
+
+
+    const createdAt = new Date(Date.now())
+
+    const {
+        rows: [comment]
+    } = await db.query(`INSERT INTO comments (author, body, created_at, article_id)
+    VALUES ($1, $2, $3, $4) RETURNING *;`, [username, body, createdAt, id])
+
+
+
+    return comment
+}
+
+
 exports.selectCommentsByArticleId = async (id) => {
 
     if (!Number.isInteger(Number(id))) {
@@ -59,6 +93,7 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
     let topicParams = []
 
     if (topic) {
+
         topicQuery = `WHERE articles.topic = $1 `
         topicParams.push(topic)
     }
@@ -77,6 +112,8 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
 
 
     if (articles.length === 0 || !articles) {
+
+
         return Promise.reject({
             status: 404,
             message: "Not Found"
@@ -127,6 +164,8 @@ exports.selectArticleById = async (id) => {
 
 
 exports.updateArticleById = async (id, changeVotes) => {
+
+
 
     if (!Number.isInteger(Number(id)) || !Number.isInteger(Number(changeVotes))) {
         return Promise.reject({
