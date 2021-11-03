@@ -142,7 +142,7 @@ exports.selectArticleById = async (id) => {
 
     const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
     LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1
-    GROUP BY articles.article_id`
+    GROUP BY articles.article_id;`
 
     const {
         rows: [article]
@@ -173,19 +173,15 @@ exports.updateArticleById = async (id, changeVotes) => {
         })
     }
 
+    await db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2;`, [changeVotes, id])
 
-    const queries = [
-        db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;`, [changeVotes, id]),
-        db.query(`SELECT COUNT(comment_id) FROM comments WHERE article_id = $1`, [id])
-    ]
+    const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
+    LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1
+    GROUP BY articles.article_id;`
 
-    const [{
+    const {
         rows: [article]
-    }, {
-        rows: [{
-            count
-        }]
-    }] = await Promise.all(queries)
+    } = await db.query(queryString, [id])
 
     if (!article) {
         return Promise.reject({
@@ -194,7 +190,6 @@ exports.updateArticleById = async (id, changeVotes) => {
         })
     }
 
-    article['comment_count'] = Number(count)
 
     return article
 
