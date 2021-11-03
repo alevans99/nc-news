@@ -851,6 +851,36 @@ describe('App.js', () => {
 
                 });
 
+                it('should return 404 when no comment exists with id in valid format', () => {
+
+                    return request(app)
+                        .delete(`/api/comments/300`)
+                        .expect(404)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+
+                            expect(message).toBe("Not Found")
+                        });
+                });
+
+                it('should return 400 given an invalid id format', () => {
+
+                    return request(app)
+                        .delete(`/api/comments/wrong`)
+                        .expect(400)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+
+                            expect(message).toBe("Invalid Request")
+                        });
+                });
+
             });
 
 
