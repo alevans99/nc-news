@@ -44,6 +44,30 @@ describe('App.js', () => {
 
 
         });
+
+
+        describe('POST/PATCH/DELETE', () => {
+
+            it('should return method not allowed', () => {
+
+
+                return request(app)
+                    .post(`/api`)
+                    .expect(405)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toEqual("Method Not Allowed")
+                    });
+
+
+            });
+
+        });
+
     });
 
 
@@ -77,6 +101,28 @@ describe('App.js', () => {
 
             });
 
+
+        });
+
+        describe('POST/PATCH/DELETE', () => {
+
+            it('should return method not allowed', () => {
+
+
+                return request(app)
+                    .post(`/api/topics`)
+                    .expect(405)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toEqual("Method Not Allowed")
+                    });
+
+
+            });
 
         });
 
@@ -257,6 +303,28 @@ describe('App.js', () => {
             });
 
 
+
+        });
+
+        describe('POST/PATCH/DELETE', () => {
+
+            it('should return method not allowed', () => {
+
+
+                return request(app)
+                    .post(`/api/articles`)
+                    .expect(405)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toEqual("Method Not Allowed")
+                    });
+
+
+            });
 
         });
 
@@ -472,6 +540,28 @@ describe('App.js', () => {
 
             });
 
+            describe('POST/DELETE', () => {
+
+                it('should return method not allowed', () => {
+
+
+                    return request(app)
+                        .post(`/api/articles/3`)
+                        .expect(405)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+
+                            expect(message).toEqual("Method Not Allowed")
+                        });
+
+
+                });
+
+            });
+
 
             describe('/api/articles/:article_id/comments', () => {
 
@@ -595,6 +685,7 @@ describe('App.js', () => {
                     });
 
 
+
                     it('Should return 400 when an incorrect user is provided', () => {
 
                         const articleId = 3
@@ -673,6 +764,28 @@ describe('App.js', () => {
                                 expect(message).toBe("Invalid Request")
 
                             });
+
+                    });
+
+                });
+
+                describe('PATCH/DELETE', () => {
+
+                    it('should return method not allowed', () => {
+
+
+                        return request(app)
+                            .patch(`/api/articles/3/comments`)
+                            .expect(405)
+                            .then(({
+                                body: {
+                                    message
+                                }
+                            }) => {
+
+                                expect(message).toEqual("Method Not Allowed")
+                            });
+
 
                     });
 
