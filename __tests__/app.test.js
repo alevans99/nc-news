@@ -922,4 +922,38 @@ describe('App.js', () => {
 
     });
 
+
+    describe('api/users', () => {
+
+        describe('GET', () => {
+
+            it('Should provide an array of usernames and status 200 when successful', () => {
+
+                return request(app)
+                    .get("/api/users")
+                    .expect(200)
+                    .then(({
+                        body: {
+                            users
+                        }
+                    }) => {
+
+                        expect(users).toHaveLength(4);
+                        users.forEach((user) => {
+                            expect(Object.keys(user)).toHaveLength(1)
+
+                            expect(user).toMatchObject({
+                                username: expect.any(String)
+                            });
+                        })
+
+                    });
+
+            });
+
+        });
+
+
+    });
+
 });
