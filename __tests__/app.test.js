@@ -800,4 +800,84 @@ describe('App.js', () => {
 
     });
 
+
+    describe('api/comments', () => {
+
+        describe('GET/POST/PATCH/DELETE', () => {
+
+            it('should return method not allowed', () => {
+
+                return request(app)
+                    .get(`/api/comments`)
+                    .expect(405)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toEqual("Method Not Allowed")
+                    });
+
+
+            });
+
+        });
+
+        describe('api/comments/:comment_id', () => {
+
+
+
+            describe('DELETE', () => {
+
+                it('should delete the comment with the chosen ID and return 204 with no body', () => {
+
+                    return request(app)
+                        .delete(`/api/comments/3`)
+                        .expect(204)
+                        .then(() => {
+
+                            return request(app)
+                                .get(`/api/articles/1/comments`)
+
+                        }).then(({
+                            body: {
+                                comments
+                            }
+                        }) => {
+                            expect(comments).toHaveLength(10)
+                        })
+
+
+                });
+
+            });
+
+
+            describe('GET/POST/PATCH', () => {
+
+                it('should return method not allowed', () => {
+
+
+                    return request(app)
+                        .get(`/api/comments/3`)
+                        .expect(405)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+
+                            expect(message).toEqual("Method Not Allowed")
+                        });
+
+
+                });
+
+            });
+
+        });
+
+    });
+
 });
