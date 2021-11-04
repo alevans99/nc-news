@@ -458,14 +458,14 @@ describe('App.js', () => {
 
             describe('PATCH', () => {
 
-                it('Should return status 201 and update the \'votes\' property to the given value', () => {
+                it('Should return status 200 and update the \'votes\' property to the given value', () => {
 
                     const articleId = 3
                     return request(app)
                         .patch(`/api/articles/${articleId}`).send({
                             inc_votes: 1
                         })
-                        .expect(201)
+                        .expect(200)
                         .then(({
                             body: {
                                 article
@@ -507,7 +507,7 @@ describe('App.js', () => {
                         .patch(`/api/articles/${articleId}`).send({
                             inc_votes: -10
                         })
-                        .expect(201)
+                        .expect(200)
                         .then(({
                             body: {
                                 article

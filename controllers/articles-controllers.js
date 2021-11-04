@@ -72,7 +72,7 @@ exports.patchArticleById = async (req, res, next) => {
 
         const article = await updateArticleById(id, changeVotes)
 
-        res.status(201).send({
+        res.status(200).send({
             article
         })
 
