@@ -687,9 +687,28 @@ describe('App.js', () => {
                     });
 
 
-                    it('Should return 404 when no comments found', () => {
+                    it('Should return 200 when no comments found but article exists', () => {
 
-                        const articleId = 300
+                        const articleId = 2
+                        return request(app)
+                            .get(`/api/articles/${articleId}/comments`)
+                            .expect(200)
+                            .then(({
+                                body: {
+                                    comments
+                                }
+                            }) => {
+
+                                expect(comments).toEqual([])
+
+                            });
+
+                    });
+
+
+                    it('Should return 404 status when a correct ID value type given, but no article exists', () => {
+
+                        const articleId = 4000
                         return request(app)
                             .get(`/api/articles/${articleId}/comments`)
                             .expect(404)

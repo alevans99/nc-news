@@ -154,16 +154,24 @@ exports.selectCommentsByArticleId = async (id) => {
         })
     }
 
-    const {
-        rows: comments
-    } = await db.query(`SELECT * FROM comments WHERE article_id = $1;`, [id])
 
-    if (!comments || comments.length === 0) {
+    //Check article exists
+    const {
+        rows: [requestedArticle]
+    } = await db.query('SELECT * FROM articles WHERE article_id = $1', [id])
+
+    if (!requestedArticle) {
         return Promise.reject({
             status: 404,
             message: "Not Found"
         })
     }
+
+
+    const {
+        rows: comments
+    } = await db.query(`SELECT * FROM comments WHERE article_id = $1;`, [id])
+
 
     return comments
 }
