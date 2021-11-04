@@ -180,11 +180,25 @@ exports.selectCommentsByArticleId = async (id) => {
 //Add a new comment for a single article
 exports.insertCommentToArticleId = async (id, username, body) => {
 
+
+    //Check article exists
     const {
-        rows: validArticleCheck
+        rows: validArticles
     } = await db.query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
 
-    if (validArticleCheck.length !== 1) {
+    if (validArticles.length !== 1) {
+        return Promise.reject({
+            status: 404,
+            message: "Not Found"
+        })
+    }
+
+    //Check the user exists
+    const {
+        rows: validUsers
+    } = await db.query(`SELECT username FROM users WHERE username = $1;`, [username])
+
+    if (validUsers.length !== 1) {
         return Promise.reject({
             status: 404,
             message: "Not Found"
@@ -192,16 +206,6 @@ exports.insertCommentToArticleId = async (id, username, body) => {
     }
 
 
-    const {
-        rows: validUsers
-    } = await db.query(`SELECT username FROM users WHERE username = $1;`, [username])
-
-    if (!Number.isInteger(Number(id)) || validUsers.length !== 1) {
-        return Promise.reject({
-            status: 400,
-            message: "Invalid Request"
-        })
-    }
 
     const createdAt = new Date(Date.now())
 

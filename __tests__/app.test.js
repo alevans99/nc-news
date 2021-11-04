@@ -789,12 +789,32 @@ describe('App.js', () => {
 
 
 
-                    it('Should return 400 when an incorrect user is provided', () => {
+                    it('Should return 404 when a user doesn\'t exists, but the username format is valid', () => {
 
                         const articleId = 3
                         return request(app)
                             .post(`/api/articles/${articleId}/comments`).send({
                                 username: "doesnotexist",
+                                body: "A test comment"
+                            })
+                            .expect(404)
+                            .then(({
+                                body: {
+                                    message
+                                }
+                            }) => {
+                                expect(message).toBe("Not Found")
+
+                            });
+
+                    });
+
+                    it('Should return 400 when a user doesn\'t exists, and the username format is invalid', () => {
+
+                        const articleId = 3
+                        return request(app)
+                            .post(`/api/articles/${articleId}/comments`).send({
+                                username: 320,
                                 body: "A test comment"
                             })
                             .expect(400)
