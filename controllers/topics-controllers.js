@@ -2,6 +2,7 @@ const {
     selectTopics
 } = require("../models/topics-models")
 
+
 exports.getTopics = async (req, res, next) => {
 
     try {

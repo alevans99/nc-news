@@ -15,7 +15,6 @@ commentsRouter
     .all(methodNotAllowed)
 
 //Routes('api/comments/')
-
 commentsRouter
     .route("/")
     .all(methodNotAllowed)

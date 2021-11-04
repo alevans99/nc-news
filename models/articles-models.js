@@ -49,7 +49,6 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
 
     if (articles.length === 0 || !articles) {
 
-
         return Promise.reject({
             status: 404,
             message: "Not Found"
