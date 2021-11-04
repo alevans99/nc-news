@@ -62,14 +62,6 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
 
 
 
-    // if (articles.length === 0 || !articles) {
-
-    //     return Promise.reject({
-    //         status: 404,
-    //         message: "Not Found"
-    //     })
-    // }
-
     return articles
 
 }
@@ -109,14 +101,27 @@ exports.updateArticleById = async (id, changeVotes) => {
 
 
 
-    if (!Number.isInteger(Number(id)) || !Number.isInteger(Number(changeVotes))) {
+    if (!Number.isInteger(Number(id))) {
         return Promise.reject({
             status: 400,
             message: "Invalid Request"
         })
     }
 
-    await db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2;`, [changeVotes, id])
+    //Only update if a request body has been provided
+    if (changeVotes) {
+
+        //Only allow Integers to be passed to the DB
+        if (!Number.isInteger(Number(changeVotes))) {
+            return Promise.reject({
+                status: 400,
+                message: "Invalid Request"
+            })
+        }
+
+        await db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2;`, [changeVotes, id])
+    }
+
 
     const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
     LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1

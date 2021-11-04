@@ -59,18 +59,18 @@ exports.patchArticleById = async (req, res, next) => {
         } = req.params;
 
         const {
-            inc_votes: changeVotes
+            inc_votes: votesToChange
         } = req.body
 
+        if (Object.keys(req.body).length > 1 || (Object.keys(req.body).length !== 0 && !req.body.hasOwnProperty("inc_votes"))) {
 
-        if (Object.keys(req.body).length !== 1 || !req.body.hasOwnProperty('inc_votes')) {
             await Promise.reject({
                 status: 400,
                 message: "Invalid Request"
             })
         }
 
-        const article = await updateArticleById(id, changeVotes)
+        const article = await updateArticleById(id, votesToChange)
 
         res.status(200).send({
             article

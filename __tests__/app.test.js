@@ -500,7 +500,7 @@ describe('App.js', () => {
                 });
 
 
-                it('Should return status 201 and update the \'votes\' property when given a negative value', () => {
+                it('Should return status 200 and update the \'votes\' property when given a negative value', () => {
 
                     const articleId = 3
                     return request(app)
@@ -539,6 +539,44 @@ describe('App.js', () => {
 
                         });
 
+                });
+
+
+                it('Should return status 200 with an unchanged article if an empty request body is provided', () => {
+                    const articleId = 3
+                    return request(app)
+                        .patch(`/api/articles/${articleId}`)
+                        .expect(200)
+                        .then(({
+                            body: {
+                                article
+                            }
+                        }) => {
+
+                            expect(Object.keys(article)).toHaveLength(8)
+
+                            expect(article).toMatchObject({
+                                author: expect.any(String),
+                                title: expect.any(String),
+                                article_id: expect.any(Number),
+                                body: expect.any(String),
+                                topic: expect.any(String),
+                                created_at: expect.any(String),
+                                votes: expect.any(Number),
+                                comment_count: expect.any(Number)
+                            });
+
+                            expect(article).toMatchObject({
+                                title: 'Eight pug gifs that remind me of mitch',
+                                topic: 'mitch',
+                                author: 'icellusedkars',
+                                body: 'some gifs',
+                                created_at: '2020-11-03T09:12:00.000Z',
+                                votes: 0,
+                                comment_count: 2
+                            })
+
+                        });
                 });
 
                 it('Should return a 400 error if the request body has more than \'inc_votes\' as a key', () => {
