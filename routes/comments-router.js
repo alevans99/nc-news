@@ -14,6 +14,8 @@ commentsRouter
     .delete(deleteComment)
     .all(methodNotAllowed)
 
+//Routes('api/comments/')
+
 commentsRouter
     .route("/")
     .all(methodNotAllowed)

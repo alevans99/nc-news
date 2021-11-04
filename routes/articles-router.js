@@ -13,7 +13,7 @@ const {
     methodNotAllowed
 } = require("../utils")
 
-
+//Routes('api/articles/')
 articlesRouter
     .route("/")
     .get(getArticles)

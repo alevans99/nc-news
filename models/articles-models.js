@@ -1,75 +1,7 @@
 const db = require('../db/connection.js');
 
-
-
-exports.insertCommentToArticleId = async (id, username, body) => {
-
-
-    const {
-        rows: validArticleCheck
-    } = await db.query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
-
-    if (validArticleCheck.length !== 1) {
-        return Promise.reject({
-            status: 404,
-            message: "Not Found"
-        })
-    }
-
-
-    const {
-        rows: validUserCheck
-    } = await db.query(`SELECT username FROM users WHERE username = $1;`, [username])
-
-    if (!Number.isInteger(Number(id)) || validUserCheck.length !== 1) {
-        return Promise.reject({
-            status: 400,
-            message: "Invalid Request"
-        })
-    }
-
-
-    const createdAt = new Date(Date.now())
-
-    const {
-        rows: [comment]
-    } = await db.query(`INSERT INTO comments (author, body, created_at, article_id)
-    VALUES ($1, $2, $3, $4) RETURNING *;`, [username, body, createdAt, id])
-
-
-    return comment
-}
-
-
-exports.selectCommentsByArticleId = async (id) => {
-
-    if (!Number.isInteger(Number(id))) {
-        return Promise.reject({
-            status: 400,
-            message: "Invalid Request"
-        })
-    }
-
-    const {
-        rows: comments
-    } = await db.query(`SELECT * FROM comments WHERE article_id = $1;`, [id])
-
-    if (!comments || comments.length === 0) {
-        return Promise.reject({
-            status: 404,
-            message: "Not Found"
-        })
-    }
-
-    return comments
-
-
-}
-
-
-
+//Return all articles from the DB
 exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) => {
-
 
     const acceptedSortCriteria = [
         'author',
@@ -126,11 +58,9 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
 
     return articles
 
-
-
-
 }
 
+//Return a single article from the DB
 exports.selectArticleById = async (id) => {
 
     if (!Number.isInteger(Number(id))) {
@@ -156,12 +86,11 @@ exports.selectArticleById = async (id) => {
         })
     }
 
-
     return article
 
 }
 
-
+//Update the number of votes for a single article and return it
 exports.updateArticleById = async (id, changeVotes) => {
 
 
@@ -194,4 +123,66 @@ exports.updateArticleById = async (id, changeVotes) => {
     return article
 
 
+}
+
+//Return all comments for a single article
+exports.selectCommentsByArticleId = async (id) => {
+
+    if (!Number.isInteger(Number(id))) {
+        return Promise.reject({
+            status: 400,
+            message: "Invalid Request"
+        })
+    }
+
+    const {
+        rows: comments
+    } = await db.query(`SELECT * FROM comments WHERE article_id = $1;`, [id])
+
+    if (!comments || comments.length === 0) {
+        return Promise.reject({
+            status: 404,
+            message: "Not Found"
+        })
+    }
+
+    return comments
+}
+
+
+//Add a new comment for a single article
+exports.insertCommentToArticleId = async (id, username, body) => {
+
+    const {
+        rows: validArticleCheck
+    } = await db.query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
+
+    if (validArticleCheck.length !== 1) {
+        return Promise.reject({
+            status: 404,
+            message: "Not Found"
+        })
+    }
+
+
+    const {
+        rows: validUserCheck
+    } = await db.query(`SELECT username FROM users WHERE username = $1;`, [username])
+
+    if (!Number.isInteger(Number(id)) || validUserCheck.length !== 1) {
+        return Promise.reject({
+            status: 400,
+            message: "Invalid Request"
+        })
+    }
+
+    const createdAt = new Date(Date.now())
+
+    const {
+        rows: [comment]
+    } = await db.query(`INSERT INTO comments (author, body, created_at, article_id)
+    VALUES ($1, $2, $3, $4) RETURNING *;`, [username, body, createdAt, id])
+
+
+    return comment
 }

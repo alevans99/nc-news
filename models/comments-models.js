@@ -25,7 +25,6 @@ exports.removeComment = async (id) => {
         })
     }
 
-
     const removedComment = await db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [id])
 
     return removedComment

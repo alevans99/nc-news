@@ -140,18 +140,6 @@ const seed = (data) => {
 
       return db.query(insertComments)
     })
-    // .then(() => {
-
-    //   return db.query(`SELECT * FROM comments`)
-
-    // })
-    // .then(({
-    //   rows
-    // }) => {
-
-    //   console.log(rows)
-
-    // })
     .catch((err) => {
       console.log(err)
     })

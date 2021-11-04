@@ -8,7 +8,7 @@ const {
 } = require("../controllers/topics-controllers")
 
 
-
+//Routes('api/topics/')
 topicsRouter
     .route("/")
     .get(getTopics)

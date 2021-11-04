@@ -7,7 +7,7 @@ const {
     getUsers
 } = require("../controllers/users-controllers")
 
-
+//Routes('api/users/')
 usersRouter
     .route("/")
     .get(getUsers)

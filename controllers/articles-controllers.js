@@ -7,68 +7,7 @@ const {
 } = require("../models/articles-models")
 
 
-exports.postCommentToArticleId = async (req, res, next) => {
-
-    try {
-
-        const {
-            id
-        } = req.params;
-
-        const {
-            username,
-            body
-        } = req.body
-
-
-
-
-        //Check the body has the valid fields only
-        if (Object.keys(req.body).length !== 2 ||
-            (!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('body')) ||
-            (typeof username !== 'string' || typeof body !== 'string' || isNaN(Number(id)))) {
-
-            await Promise.reject({
-                status: 400,
-                message: "Invalid Request"
-            })
-        }
-
-        const comment = await insertCommentToArticleId(id, username, body)
-
-        res.status(201).send({
-            comment
-        })
-
-
-    } catch (err) {
-        next(err)
-    }
-
-}
-
-
-exports.getCommentsByArticleId = async (req, res, next) => {
-
-    try {
-        const {
-            id
-        } = req.params;
-
-        const comments = await selectCommentsByArticleId(id)
-
-        res.status(200).send({
-            comments
-        })
-
-    } catch (err) {
-        next(err)
-    }
-
-
-}
-
-
+//Serves all articles - filtered by queries
 exports.getArticles = async (req, res, next) => {
 
     try {
@@ -78,7 +17,6 @@ exports.getArticles = async (req, res, next) => {
             order,
             topic
         } = req.query;
-
 
 
         const articles = await selectArticles(sortBy, order, topic)
@@ -93,14 +31,12 @@ exports.getArticles = async (req, res, next) => {
 
 }
 
-
+//Serves single article by Id
 exports.getArticleById = async (req, res, next) => {
     try {
         const {
             id
         } = req.params;
-
-
 
         const article = await selectArticleById(id)
 
@@ -114,6 +50,7 @@ exports.getArticleById = async (req, res, next) => {
 
 }
 
+//Updates number of votes for an article
 
 exports.patchArticleById = async (req, res, next) => {
     try {
@@ -133,8 +70,6 @@ exports.patchArticleById = async (req, res, next) => {
             })
         }
 
-
-
         const article = await updateArticleById(id, changeVotes)
 
         res.status(201).send({
@@ -143,6 +78,63 @@ exports.patchArticleById = async (req, res, next) => {
 
     } catch (err) {
 
+        next(err)
+    }
+
+}
+
+//Serves all comments for a single article
+
+exports.getCommentsByArticleId = async (req, res, next) => {
+
+    try {
+        const {
+            id
+        } = req.params;
+
+        const comments = await selectCommentsByArticleId(id)
+
+        res.status(200).send({
+            comments
+        })
+
+    } catch (err) {
+        next(err)
+    }
+}
+
+//Add a comment to a single article
+exports.postCommentToArticleId = async (req, res, next) => {
+
+    try {
+
+        const {
+            id
+        } = req.params;
+
+        const {
+            username,
+            body
+        } = req.body
+
+        //Check the body has the valid fields only
+        if (Object.keys(req.body).length !== 2 ||
+            (!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('body')) ||
+            (typeof username !== 'string' || typeof body !== 'string' || isNaN(Number(id)))) {
+
+            await Promise.reject({
+                status: 400,
+                message: "Invalid Request"
+            })
+        }
+
+        const comment = await insertCommentToArticleId(id, username, body)
+
+        res.status(201).send({
+            comment
+        })
+
+    } catch (err) {
         next(err)
     }
 
