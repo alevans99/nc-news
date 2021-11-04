@@ -18,6 +18,13 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
         'DESC'
     ]
 
+    const {
+        rows: allTopics
+    } = await db.query(`SELECT * FROM topics`)
+
+    const acceptedTopics = allTopics.map((topic) => {
+        return topic.slug
+    })
 
     if (!acceptedSortCriteria.includes(sortBy) || !acceptedOrderCriteria.includes(order.toUpperCase())) {
 
@@ -30,15 +37,23 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
     let topicQuery = ""
     let topicParams = []
 
-    if (topic) {
 
+    if (topic) {
+        if (!acceptedTopics.includes(topic)) {
+            return Promise.reject({
+                status: 404,
+                message: "Not Found"
+            })
+        }
         topicQuery = `WHERE articles.topic = $1 `
         topicParams.push(topic)
     }
 
+
     const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
     LEFT JOIN comments ON articles.article_id = comments.article_id ${topicQuery} 
     GROUP BY articles.article_id ORDER BY articles.${sortBy} ${order.toUpperCase()};`
+
 
 
     const {
@@ -47,13 +62,13 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
 
 
 
-    if (articles.length === 0 || !articles) {
+    // if (articles.length === 0 || !articles) {
 
-        return Promise.reject({
-            status: 404,
-            message: "Not Found"
-        })
-    }
+    //     return Promise.reject({
+    //         status: 404,
+    //         message: "Not Found"
+    //     })
+    // }
 
     return articles
 

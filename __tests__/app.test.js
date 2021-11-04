@@ -260,6 +260,40 @@ describe('App.js', () => {
 
             });
 
+            it('Should return 200 and an empty array when a valid topic yields no results', () => {
+
+                return request(app)
+                    .get(`/api/articles?topic=paper`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+
+                        expect(articles).toEqual([])
+                    });
+
+
+            });
+
+            it('Should return 404 and a topic doesn\'t exist', () => {
+
+                return request(app)
+                    .get(`/api/articles?topic=notatopic`)
+                    .expect(404)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toEqual("Not Found")
+                    });
+
+
+            });
+
             it('Should return 404 not found when search query has no results', () => {
 
                 return request(app)
