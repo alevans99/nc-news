@@ -906,6 +906,129 @@ describe('App.js', () => {
                     });
 
 
+                    it('Should limit the number of articles to 10 by default', () => {
+
+                        const articleId = 1
+                        return request(app)
+                            .get(`/api/articles/${articleId}/comments`)
+                            .expect(200)
+                            .then(({
+                                body: {
+                                    comments
+                                }
+                            }) => {
+
+                                expect(comments).toHaveLength(10)
+                                comments.forEach((comment) => {
+
+                                    expect(Object.keys(comment)).toHaveLength(6)
+
+                                    expect(comment).toMatchObject({
+                                        comment_id: expect.any(Number),
+                                        author: expect.any(String),
+                                        body: expect.any(String),
+                                        article_id: expect.any(Number),
+                                        votes: expect.any(Number),
+                                        created_at: expect.any(String),
+                                    });
+
+                                    expect(comment.article_id).toBe(1)
+
+                                })
+
+
+                            });
+
+                    });
+
+                    it('Should take a \'limit\' query to select the number of results to return', () => {
+
+                        const articleId = 1
+                        return request(app)
+                            .get(`/api/articles/${articleId}/comments?limit=5`)
+                            .expect(200)
+                            .then(({
+                                body: {
+                                    comments
+                                }
+                            }) => {
+
+                                expect(comments).toHaveLength(5)
+                                comments.forEach((comment) => {
+
+                                    expect(Object.keys(comment)).toHaveLength(6)
+
+                                    expect(comment).toMatchObject({
+                                        comment_id: expect.any(Number),
+                                        author: expect.any(String),
+                                        body: expect.any(String),
+                                        article_id: expect.any(Number),
+                                        votes: expect.any(Number),
+                                        created_at: expect.any(String),
+                                    });
+
+                                    expect(comment.article_id).toBe(1)
+
+                                })
+
+
+                            });
+
+                    });
+
+                    it('Should return all results when a limit over the total is given', () => {
+
+                        const articleId = 1
+                        return request(app)
+                            .get(`/api/articles/${articleId}/comments?limit=500`)
+                            .expect(200)
+                            .then(({
+                                body: {
+                                    comments
+                                }
+                            }) => {
+
+                                expect(comments).toHaveLength(11)
+                                comments.forEach((comment) => {
+
+                                    expect(Object.keys(comment)).toHaveLength(6)
+
+                                    expect(comment).toMatchObject({
+                                        comment_id: expect.any(Number),
+                                        author: expect.any(String),
+                                        body: expect.any(String),
+                                        article_id: expect.any(Number),
+                                        votes: expect.any(Number),
+                                        created_at: expect.any(String),
+                                    });
+
+                                    expect(comment.article_id).toBe(1)
+
+                                })
+
+
+                            });
+
+                    });
+
+                    it('Should return 400 status when an incorrect limit value type given', () => {
+
+                        const articleId = 1
+                        return request(app)
+                            .get(`/api/articles/${articleId}/comments?limit=wrong`)
+                            .expect(400)
+                            .then(({
+                                body: {
+                                    message
+                                }
+                            }) => {
+
+                                expect(message).toBe("Invalid Request")
+
+                            });
+
+                    });
+
                     it('Should return 200 when no comments found but article exists', () => {
 
                         const articleId = 2
@@ -1360,7 +1483,25 @@ describe('App.js', () => {
 
                 });
 
+                it('Should return status 404 when given an valid id type that is not found', () => {
 
+                    const commentId = 3000
+                    return request(app)
+                        .patch(`/api/comments/${commentId}`).send({
+                            inc_votes: 1
+                        })
+                        .expect(404)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+
+                            expect(message).toBe("Not Found")
+
+                        });
+
+                });
 
 
             });

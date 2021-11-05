@@ -92,7 +92,14 @@ exports.getCommentsByArticleId = async (req, res, next) => {
             id
         } = req.params;
 
-        const comments = await selectCommentsByArticleId(id)
+        const {
+            limit,
+            p: page
+        } = req.query;
+
+
+
+        const comments = await selectCommentsByArticleId(id, limit, page)
 
         res.status(200).send({
             comments

@@ -139,7 +139,6 @@ exports.selectArticleById = async (id) => {
 exports.updateArticleById = async (id, votesToChange) => {
 
 
-
     if (!Number.isInteger(Number(id))) {
         return Promise.reject({
             status: 400,
@@ -184,20 +183,35 @@ exports.updateArticleById = async (id, votesToChange) => {
 }
 
 //Return all comments for a single article
-exports.selectCommentsByArticleId = async (id) => {
+exports.selectCommentsByArticleId = async (id, limit = '10', page = '1') => {
 
-    if (!Number.isInteger(Number(id))) {
+    //Check limit/page are integers
+    if (isNaN(Number(limit)) || !Number.isInteger(Number(limit)) ||
+        isNaN(Number(page)) || !Number.isInteger(Number(page)) ||
+        isNaN(Number(id)) || !Number.isInteger(Number(id))
+    ) {
         return Promise.reject({
             status: 400,
             message: "Invalid Request"
         })
     }
 
+    //Collect params needed for the DB query
+    const queryParams = [id]
+
+    //Setup limits and offsets based on default or user requests
+    let limitQuery = `LIMIT $${queryParams.length + 1}`
+    queryParams.push(Number(limit))
+
+    let pageOffset = Number(limit * (page - 1))
+    let offsetQuery = `OFFSET $${queryParams.length + 1}`
+    queryParams.push(pageOffset)
+
 
     //Check article exists
     const {
         rows: [requestedArticle]
-    } = await db.query('SELECT * FROM articles WHERE article_id = $1', [id])
+    } = await db.query(`SELECT * FROM articles WHERE article_id = $1`, [id])
 
     if (!requestedArticle) {
         return Promise.reject({
@@ -209,7 +223,7 @@ exports.selectCommentsByArticleId = async (id) => {
 
     const {
         rows: comments
-    } = await db.query(`SELECT * FROM comments WHERE article_id = $1;`, [id])
+    } = await db.query(`SELECT * FROM comments WHERE article_id = $1 ${limitQuery} ${offsetQuery};`, queryParams)
 
 
     return comments
