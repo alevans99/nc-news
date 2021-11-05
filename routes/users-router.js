@@ -5,13 +5,20 @@ const {
 } = require("../controllers/error-controllers")
 
 const {
-    getUsers
+    getUsers,
+    getUserByUsername
 } = require("../controllers/users-controllers")
 
 //Routes('api/users/')
 usersRouter
     .route("/")
     .get(getUsers)
+    .all(methodNotAllowed)
+
+
+usersRouter
+    .route("/:username")
+    .get(getUserByUsername)
     .all(methodNotAllowed)
 
 

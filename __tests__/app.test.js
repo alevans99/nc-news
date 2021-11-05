@@ -1088,6 +1088,61 @@ describe('App.js', () => {
             });
 
         });
+
+
+        describe('api/users/:username', () => {
+
+
+            describe('GET', () => {
+
+                it('Should return 200 and the user for the username requested', () => {
+
+                    return request(app)
+                        .get("/api/users/butter_bridge")
+                        .expect(200)
+                        .then(({
+                            body: {
+                                user
+                            }
+                        }) => {
+
+                            expect(Object.keys(user)).toHaveLength(3)
+
+                            expect(user).toMatchObject({
+                                username: expect.any(String),
+                                username: expect.any(String),
+                                avatar_url: expect.any(String)
+                            });
+
+                            expect(user).toMatchObject({
+                                username: 'butter_bridge',
+                                name: 'jonny',
+                                avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+                            });
+
+                        });
+                });
+
+                it('Should return 404 when user is not found for the username', () => {
+
+                    return request(app)
+                        .get("/api/users/wrong")
+                        .expect(404)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+                            expect(message).toBe("Not Found")
+
+                        });
+                });
+
+            });
+
+        });
+
+
     });
 
 });
