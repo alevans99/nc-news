@@ -7,12 +7,15 @@ const {
 const {
     connected
 } = require("./utils");
+const connectedRouter = require("./routes/connected-router");
 
 const app = express();
 
 app.use(express.json());
 
 app.use("/api", apiRouter);
+
+app.use("/", connectedRouter)
 
 //Anything not routed through /api returns an error
 app.all("/*", (req, res) => {

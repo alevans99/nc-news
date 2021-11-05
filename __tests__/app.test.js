@@ -11,6 +11,49 @@ afterAll(() => db.end());
 
 describe('App.js', () => {
 
+    describe('/', () => {
+
+        describe('GET', () => {
+            it('should send a connected message and 200', () => {
+
+                return request(app)
+                    .get("/")
+                    .expect(200)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Connected - use /api to view possible endpoints")
+                    })
+
+            });
+
+            describe('POST/PATCH/DELETE', () => {
+
+                it('should return method not allowed', () => {
+
+                    return request(app)
+                        .post(`/`)
+                        .expect(405)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+
+                            expect(message).toEqual("Method Not Allowed")
+                        });
+
+
+                });
+            });
+        });
+
+
+    });
+
 
     describe('/api', () => {
 
