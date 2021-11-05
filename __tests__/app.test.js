@@ -1140,6 +1140,27 @@ describe('App.js', () => {
 
             });
 
+            describe('POST/PATCH/DELETE', () => {
+
+                it('should return method not allowed', () => {
+
+                    return request(app)
+                        .delete(`/api/users/butter_bridge`)
+                        .expect(405)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+
+                            expect(message).toEqual("Method Not Allowed")
+                        });
+
+
+                });
+
+            });
+
         });
 
 
