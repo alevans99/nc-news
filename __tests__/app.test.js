@@ -303,7 +303,10 @@ describe('App.js', () => {
 
             });
 
-            it('Should take a topic query that allows you to limit the number of results', () => {
+
+
+
+            it('Should take a limit query that allows you to limit the number of results', () => {
 
                 return request(app)
                     .get(`/api/articles?limit=2`)
@@ -370,6 +373,77 @@ describe('App.js', () => {
 
 
             });
+
+            it('Should take a p query that allows you to specify which page you want to display', () => {
+
+                return request(app)
+                    .get(`/api/articles?limit=2&p=3`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+
+                        expect(articles).toHaveLength(2)
+                        expect(articles[0]).toMatchObject({
+                            article_id: 5,
+                            title: 'UNCOVERED: catspiracy to bring down democracy',
+                            body: 'Bastet walks amongst us, and the cats are taking arms!',
+                            votes: 0,
+                            topic: 'cats',
+                            author: 'rogersop',
+                            created_at: '2020-08-03T13:14:00.000Z',
+                            comment_count: 2
+                        })
+                        expect(articles[1]).toMatchObject({
+                            article_id: 1,
+                            title: 'Living in the shadow of a great man',
+                            body: 'I find this existence challenging',
+                            votes: 100,
+                            topic: 'mitch',
+                            author: 'butter_bridge',
+                            created_at: '2020-07-09T20:11:00.000Z',
+                            comment_count: 11
+                        })
+
+                    });
+
+
+            });
+
+            it('Should take a p query that allows you to specify which page you want to display', () => {
+
+                return request(app)
+                    .get(`/api/articles?p=2`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+
+                        expect(articles).toHaveLength(2)
+                    });
+
+            });
+
+            it('Should return 400 when an invalid page type is provided', () => {
+
+                return request(app)
+                    .get(`/api/articles?p=wrong`)
+                    .expect(400)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Invalid Request")
+                    });
+
+            });
+
 
             it('Should return 200 and an empty array when a valid topic yields no results', () => {
 

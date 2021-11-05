@@ -16,11 +16,12 @@ exports.getArticles = async (req, res, next) => {
             sort_by: sortBy,
             order,
             topic,
-            limit
+            limit,
+            p: page
         } = req.query;
 
 
-        const articles = await selectArticles(sortBy, order, topic, limit)
+        const articles = await selectArticles(sortBy, order, topic, limit, page)
 
         res.status(200).send({
             articles

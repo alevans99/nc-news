@@ -1,7 +1,7 @@
 const db = require('../db/connection.js');
 
 //Return all articles from the DB
-exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, limit = '10') => {
+exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, limit = '10', page = '1') => {
 
     const acceptedSortCriteria = [
         'author',
@@ -50,9 +50,10 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, li
     }
 
 
-    //Check limit is an integer
-    if (isNaN(Number(limit)) || !Number.isInteger(Number(limit))) {
-
+    //Check limit/page are integers
+    if (isNaN(Number(limit)) || !Number.isInteger(Number(limit)) ||
+        isNaN(Number(page)) || !Number.isInteger(Number(page))
+    ) {
         return Promise.reject({
             status: 400,
             message: "Invalid Request"
@@ -62,10 +63,14 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, li
     let limitQuery = `LIMIT $${queryParams.length + 1}`
     queryParams.push(Number(limit))
 
+    let pageOffset = Number(limit * (page - 1))
+    let offsetQuery = `OFFSET $${queryParams.length + 1}`
+    queryParams.push(pageOffset)
+
 
     const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
     LEFT JOIN comments ON articles.article_id = comments.article_id ${topicQuery} 
-    GROUP BY articles.article_id ORDER BY articles.${sortBy} ${order.toUpperCase()} ${limitQuery};`
+    GROUP BY articles.article_id ORDER BY articles.${sortBy} ${order.toUpperCase()} ${limitQuery} ${offsetQuery};`
 
 
 
