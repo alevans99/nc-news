@@ -240,6 +240,24 @@ describe('App.js', () => {
 
             });
 
+
+            it('should return a total_count property which provides the total number of articles disregarding limits', () => {
+
+                return request(app)
+                    .get(`/api/articles?topic=paper`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            total_count
+                        }
+                    }) => {
+
+                        expect(total_count).toBe(0)
+
+                    });
+
+            });
+
             it('should sort by date by default', () => {
 
                 return request(app)
@@ -1151,7 +1169,6 @@ describe('App.js', () => {
         describe('api/comments/:comment_id', () => {
 
 
-
             describe('DELETE', () => {
 
                 it('should delete the comment with the chosen ID and return 204 with no body', () => {
@@ -1208,7 +1225,150 @@ describe('App.js', () => {
             });
 
 
-            describe('GET/POST/PATCH', () => {
+            describe('PATCH', () => {
+
+                it('Should return status 200 and update the \'votes\' property to the given value', () => {
+
+                    const commentId = 3
+                    return request(app)
+                        .patch(`/api/comments/${commentId}`).send({
+                            inc_votes: 1
+                        })
+                        .expect(200)
+                        .then(({
+                            body: {
+                                comment
+                            }
+                        }) => {
+
+                            expect(Object.keys(comment)).toHaveLength(6)
+
+                            expect(comment).toMatchObject({
+                                comment_id: expect.any(Number),
+                                body: expect.any(String),
+                                votes: expect.any(Number),
+                                author: expect.any(String),
+                                article_id: expect.any(Number),
+                                created_at: expect.any(String)
+                            });
+
+                            expect(comment).toMatchObject({
+                                comment_id: 3,
+                                body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+                                votes: 101,
+                                author: "icellusedkars",
+                                article_id: 1,
+                                created_at: "2020-03-01T00:00:00.000Z",
+                            })
+
+                        });
+
+                });
+
+                it('Should return status 200 and update the \'votes\' property when given a negative value', () => {
+
+                    const commentId = 3
+                    return request(app)
+                        .patch(`/api/comments/${commentId}`).send({
+                            inc_votes: -10
+                        })
+                        .expect(200)
+                        .then(({
+                            body: {
+                                comment
+                            }
+                        }) => {
+
+                            expect(Object.keys(comment)).toHaveLength(6)
+
+                            expect(comment).toMatchObject({
+                                comment_id: expect.any(Number),
+                                body: expect.any(String),
+                                votes: expect.any(Number),
+                                author: expect.any(String),
+                                article_id: expect.any(Number),
+                                created_at: expect.any(String)
+                            });
+
+                            expect(comment).toMatchObject({
+                                comment_id: 3,
+                                body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+                                votes: 90,
+                                author: "icellusedkars",
+                                article_id: 1,
+                                created_at: "2020-03-01T00:00:00.000Z",
+                            })
+
+                        });
+
+                });
+
+                it('Should return status 200 and an unchanged comment when provided no increase argument in the body', () => {
+
+                    const commentId = 3
+                    return request(app)
+                        .patch(`/api/comments/${commentId}`).send({
+
+                        })
+                        .expect(200)
+                        .then(({
+                            body: {
+                                comment
+                            }
+                        }) => {
+
+                            expect(Object.keys(comment)).toHaveLength(6)
+
+                            expect(comment).toMatchObject({
+                                comment_id: expect.any(Number),
+                                body: expect.any(String),
+                                votes: expect.any(Number),
+                                author: expect.any(String),
+                                article_id: expect.any(Number),
+                                created_at: expect.any(String)
+                            });
+
+                            expect(comment).toMatchObject({
+                                comment_id: 3,
+                                body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+                                votes: 100,
+                                author: "icellusedkars",
+                                article_id: 1,
+                                created_at: "2020-03-01T00:00:00.000Z",
+                            })
+
+                        });
+
+                });
+                it('Should return status 400 when given an invalid update value', () => {
+
+                    const commentId = 3
+                    return request(app)
+                        .patch(`/api/comments/${commentId}`).send({
+                            inc_votes: "wrong"
+                        })
+                        .expect(400)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+
+                            expect(message).toBe("Invalid Request")
+
+                        });
+
+                });
+
+
+
+
+            });
+
+
+
+
+            describe('GET/POST', () => {
 
                 it('should return method not allowed', () => {
 

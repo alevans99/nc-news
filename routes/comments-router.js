@@ -2,10 +2,12 @@ const commentsRouter = require('express').Router();
 const {
     methodNotAllowed,
 
+
 } = require("../controllers/error-controllers")
 
 const {
-    deleteComment
+    deleteComment,
+    patchComment
 } = require("../controllers/comments-controllers")
 
 
@@ -13,6 +15,7 @@ const {
 commentsRouter
     .route("/:comment_id")
     .delete(deleteComment)
+    .patch(patchComment)
     .all(methodNotAllowed)
 
 //Routes('api/comments/')
