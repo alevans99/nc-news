@@ -570,13 +570,159 @@ describe('App.js', () => {
 
         });
 
-        describe('POST/PATCH/DELETE', () => {
+
+        describe('POST', () => {
+
+            it('should return 201 and the newly added article when successful', () => {
+
+                return request(app)
+                    .post(`/api/articles`)
+                    .send({
+
+                        title: 'Another cat article',
+                        topic: 'cats',
+                        author: 'icellusedkars',
+                        body: 'some images'
+
+                    })
+                    .expect(201)
+                    .then(({
+                        body: {
+                            article
+                        }
+                    }) => {
+
+                        expect(Object.keys(article)).toHaveLength(8)
+
+                        expect(article).toMatchObject({
+                            author: expect.any(String),
+                            title: expect.any(String),
+                            article_id: expect.any(Number),
+                            body: expect.any(String),
+                            topic: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            comment_count: expect.any(Number)
+                        });
+
+                        expect(article).toMatchObject({
+                            article_id: 13,
+                            title: 'Another cat article',
+                            topic: 'cats',
+                            author: 'icellusedkars',
+                            body: 'some images',
+                            created_at: expect.any(String),
+                            votes: 0,
+                            comment_count: 0
+                        })
+
+                    });
+
+
+            });
+
+
+            it('should return 400 if invalid body provided ', () => {
+
+                return request(app)
+                    .post(`/api/articles`)
+                    .send({
+
+                        thetitle: 'Another cat article',
+                        topic: 'cats',
+                        author: 'icellusedkars',
+                        body: 'some images'
+
+                    })
+                    .expect(400)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Invalid Request")
+
+                    });
+
+
+            });
+
+            it('should return 400 if no body provided ', () => {
+
+                return request(app)
+                    .post(`/api/articles`)
+                    .send({
+
+                        title: 'Another cat article',
+                        topic: 3,
+                        author: 'icellusedkars',
+                        body: 'some images'
+
+                    })
+                    .expect(400)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Invalid Request")
+
+                    });
+            });
+
+
+            it('should return 404 if a username is not found, but provided in the valid format', () => {
+
+                return request(app)
+                    .post(`/api/articles`)
+                    .send({
+
+                        title: 'Another cat article',
+                        topic: "topic",
+                        author: 'badusername',
+                        body: 'some images'
+
+                    })
+                    .expect(404)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Not Found")
+
+                    });
+            });
+
+
+            it('should return 400 if invalid body value provided ', () => {
+
+                return request(app)
+                    .post(`/api/articles`)
+                    .expect(400)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Invalid Request")
+
+                    });
+            });
+
+        });
+
+        describe('PATCH/DELETE', () => {
 
             it('should return method not allowed', () => {
 
 
                 return request(app)
-                    .post(`/api/articles`)
+                    .patch(`/api/articles`)
                     .expect(405)
                     .then(({
                         body: {

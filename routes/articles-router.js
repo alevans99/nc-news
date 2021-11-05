@@ -5,7 +5,8 @@ const {
     patchArticleById,
     getArticles,
     getCommentsByArticleId,
-    postCommentToArticleId
+    postCommentToArticleId,
+    postArticle
 } = require("../controllers/articles-controllers")
 
 
@@ -18,6 +19,7 @@ const {
 articlesRouter
     .route("/")
     .get(getArticles)
+    .post(postArticle)
     .all(methodNotAllowed)
 
 articlesRouter

@@ -270,3 +270,61 @@ exports.insertCommentToArticleId = async (id, username, body) => {
 
     return comment
 }
+
+
+
+exports.insertArticle = async (author, title, body, topic) => {
+
+
+
+    //Check the body has the valid fields only
+    if ((!author || !title || !body || !topic) ||
+        (typeof author !== 'string' || typeof title !== 'string' ||
+            typeof body !== 'string' || typeof topic !== 'string')) {
+
+        await Promise.reject({
+            status: 400,
+            message: "Invalid Request"
+        })
+    }
+
+
+    //Check the user exists
+    const {
+        rows: validUsers
+    } = await db.query(`SELECT username FROM users WHERE username = $1;`, [author])
+
+    if (validUsers.length !== 1) {
+        return Promise.reject({
+            status: 404,
+            message: "Not Found"
+        })
+    }
+
+
+    const createdAt = new Date(Date.now())
+
+
+    //Create the new article
+    const {
+        rows: [newArticle]
+    } = await db.query(`INSERT INTO articles (title,
+        body, topic, author, created_at)
+    VALUES ($1, $2, $3, $4, $5) RETURNING *;`, [title, body, topic, author, createdAt])
+
+
+    console.log("new article", newArticle)
+
+    //Fetch the new comment with the full details
+    const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
+    LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1
+    GROUP BY articles.article_id;`
+
+    const {
+        rows: [article]
+    } = await db.query(queryString, [newArticle['article_id']])
+
+    console.log("Full article", article)
+
+    return article
+}

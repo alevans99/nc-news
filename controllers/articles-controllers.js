@@ -3,7 +3,8 @@ const {
     updateArticleById,
     selectArticles,
     selectCommentsByArticleId,
-    insertCommentToArticleId
+    insertCommentToArticleId,
+    insertArticle
 } = require("../models/articles-models")
 
 
@@ -139,6 +140,33 @@ exports.postCommentToArticleId = async (req, res, next) => {
 
         res.status(201).send({
             comment
+        })
+
+    } catch (err) {
+        next(err)
+    }
+
+}
+
+
+
+exports.postArticle = async (req, res, next) => {
+
+    try {
+
+        const {
+            author,
+            title,
+            body,
+            topic
+        } = req.body
+
+
+
+        const article = await insertArticle(author, title, body, topic)
+
+        res.status(201).send({
+            article
         })
 
     } catch (err) {
