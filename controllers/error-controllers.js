@@ -10,6 +10,12 @@ exports.handleCustomErrors = (err, req, res, next) => {
     }
 };
 
+//Sends a response for any methods not supported
+exports.methodNotAllowed = (req, res) => {
+    res.status(405).send({
+        message: "Method Not Allowed"
+    })
+}
 //Handle any server errors
 exports.handle500Errors = (err, req, res, next) => {
     console.log(err)

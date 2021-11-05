@@ -1,7 +1,8 @@
 const usersRouter = require('express').Router();
 const {
-    methodNotAllowed
-} = require("../utils")
+    methodNotAllowed,
+
+} = require("../controllers/error-controllers")
 
 const {
     getUsers

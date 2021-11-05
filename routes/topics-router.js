@@ -1,7 +1,8 @@
 const topicsRouter = require('express').Router();
 const {
-    methodNotAllowed
-} = require("../utils")
+    methodNotAllowed,
+
+} = require("../controllers/error-controllers")
 
 const {
     getTopics

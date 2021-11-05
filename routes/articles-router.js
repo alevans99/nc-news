@@ -10,8 +10,9 @@ const {
 
 
 const {
-    methodNotAllowed
-} = require("../utils")
+    methodNotAllowed,
+
+} = require("../controllers/error-controllers")
 
 //Routes('api/articles/')
 articlesRouter

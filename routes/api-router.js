@@ -6,7 +6,7 @@ const usersRouter = require('./users-router')
 const {
     methodNotAllowed,
 
-} = require("../utils")
+} = require("../controllers/error-controllers")
 const {
     getApi
 } = require('../controllers/api-controllers')
