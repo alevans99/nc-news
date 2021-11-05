@@ -976,6 +976,8 @@ describe('App.js', () => {
 
                     });
 
+
+
                     it('Should return all results when a limit over the total is given', () => {
 
                         const articleId = 1
@@ -987,7 +989,6 @@ describe('App.js', () => {
                                     comments
                                 }
                             }) => {
-
                                 expect(comments).toHaveLength(11)
                                 comments.forEach((comment) => {
 
@@ -1016,6 +1017,78 @@ describe('App.js', () => {
                         const articleId = 1
                         return request(app)
                             .get(`/api/articles/${articleId}/comments?limit=wrong`)
+                            .expect(400)
+                            .then(({
+                                body: {
+                                    message
+                                }
+                            }) => {
+
+                                expect(message).toBe("Invalid Request")
+
+                            });
+
+                    });
+
+
+                    it('Should take a \'p\' query to specify which page to return', () => {
+
+                        const articleId = 1
+                        return request(app)
+                            .get(`/api/articles/${articleId}/comments?limit=2&p=3`)
+                            .expect(200)
+                            .then(({
+                                body: {
+                                    comments
+                                }
+                            }) => {
+
+                                expect(comments).toHaveLength(2)
+                                comments.forEach((comment) => {
+
+                                    expect(Object.keys(comment)).toHaveLength(6)
+
+                                    expect(comment).toMatchObject({
+                                        comment_id: expect.any(Number),
+                                        author: expect.any(String),
+                                        body: expect.any(String),
+                                        article_id: expect.any(Number),
+                                        votes: expect.any(Number),
+                                        created_at: expect.any(String),
+                                    });
+
+                                    expect(comment.article_id).toBe(1)
+
+                                })
+
+                                expect(comments[0]).toEqual({
+                                    comment_id: 6,
+                                    author: 'icellusedkars',
+                                    article_id: 1,
+                                    votes: 0,
+                                    created_at: '2020-04-10T23:00:00.000Z',
+                                    body: 'I hate streaming eyes even more'
+                                })
+
+                                expect(comments[1]).toEqual({
+                                    comment_id: 7,
+                                    author: 'icellusedkars',
+                                    article_id: 1,
+                                    votes: 0,
+                                    created_at: '2020-05-14T23:00:00.000Z',
+                                    body: 'Lobster pot'
+                                })
+
+
+                            });
+
+                    });
+
+                    it('Should return 400 status when an incorrect p value type given', () => {
+
+                        const articleId = 1
+                        return request(app)
+                            .get(`/api/articles/${articleId}/comments?p=wrong`)
                             .expect(400)
                             .then(({
                                 body: {
