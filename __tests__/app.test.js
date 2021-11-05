@@ -158,13 +158,115 @@ describe('App.js', () => {
 
         });
 
-        describe('POST/PATCH/DELETE', () => {
+
+        describe('POST', () => {
+
+
+            it('Should respond with 201 and the new topic object when successful', () => {
+
+                return request(app)
+                    .post("/api/topics")
+                    .send({
+                        slug: "test topic",
+                        description: "A topic to use for a test"
+                    })
+                    .expect(201)
+                    .then(({
+                        body: {
+                            topic
+                        }
+                    }) => {
+
+
+                        expect(Object.keys(topic)).toHaveLength(2)
+
+                        expect(topic).toMatchObject({
+                            slug: expect.any(String),
+                            description: expect.any(String)
+                        });
+
+                        expect(topic).toMatchObject({
+                            slug: "test topic",
+                            description: "A topic to use for a test"
+                        })
+
+
+
+                    });
+            });
+
+
+
+            it('Should respond with 400 if the topic is not unique', () => {
+
+                return request(app)
+                    .post("/api/topics")
+                    .send({
+                        slug: "paper",
+                        description: "An incorrect topic"
+                    })
+                    .expect(400)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Invalid Request")
+
+                    });
+            });
+
+
+            it('Should respond with 400 if an incorrect value type is given', () => {
+
+                return request(app)
+                    .post("/api/topics")
+                    .send({
+                        slug: 36,
+                        description: "An incorrect topic"
+                    })
+                    .expect(400)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Invalid Request")
+
+                    });
+            });
+
+            it('Should respond with 400 if one or more required values are not included in the body', () => {
+
+                return request(app)
+                    .post("/api/topics")
+                    .send({
+                        slug: "unique",
+
+                    })
+                    .expect(400)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Invalid Request")
+
+                    });
+            });
+
+        });
+
+        describe('PATCH/DELETE', () => {
 
             it('should return method not allowed', () => {
 
 
                 return request(app)
-                    .post(`/api/topics`)
+                    .delete(`/api/topics`)
                     .expect(405)
                     .then(({
                         body: {

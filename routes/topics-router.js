@@ -5,7 +5,8 @@ const {
 } = require("../controllers/error-controllers")
 
 const {
-    getTopics
+    getTopics,
+    postTopic
 } = require("../controllers/topics-controllers")
 
 
@@ -13,6 +14,7 @@ const {
 topicsRouter
     .route("/")
     .get(getTopics)
+    .post(postTopic)
     .all(methodNotAllowed)
 
 module.exports = topicsRouter

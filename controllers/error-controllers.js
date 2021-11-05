@@ -10,6 +10,22 @@ exports.handleCustomErrors = (err, req, res, next) => {
     }
 };
 
+exports.handlePsqlErrors = (err, req, res, next) => {
+
+    console.log(err, "psql error")
+    if (err.code = 23502) {
+        res.status(400).send({
+            message: "Invalid Request"
+        });
+    } else {
+        next(err)
+    }
+};
+
+
+
+
+
 //Sends a response for any methods not supported
 exports.methodNotAllowed = (req, res) => {
     res.status(405).send({

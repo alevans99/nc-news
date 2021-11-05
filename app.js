@@ -3,6 +3,7 @@ const apiRouter = require("./routes/api-router");
 const {
     handle500Errors,
     handleCustomErrors,
+    handlePsqlErrors,
 } = require("./controllers/error-controllers");
 const {
     connected
@@ -25,6 +26,8 @@ app.all("/*", (req, res) => {
 });
 
 app.use(handleCustomErrors);
+app.use(handlePsqlErrors);
+
 app.use(handle500Errors);
 
 module.exports = app;

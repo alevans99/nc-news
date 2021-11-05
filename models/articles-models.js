@@ -313,7 +313,6 @@ exports.insertArticle = async (author, title, body, topic) => {
     VALUES ($1, $2, $3, $4, $5) RETURNING *;`, [title, body, topic, author, createdAt])
 
 
-    console.log("new article", newArticle)
 
     //Fetch the new comment with the full details
     const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
@@ -324,7 +323,6 @@ exports.insertArticle = async (author, title, body, topic) => {
         rows: [article]
     } = await db.query(queryString, [newArticle['article_id']])
 
-    console.log("Full article", article)
 
     return article
 }
