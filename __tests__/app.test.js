@@ -1091,7 +1091,60 @@ describe('App.js', () => {
 
             });
 
-            describe('POST/DELETE', () => {
+            describe('DELETE', () => {
+
+                it('Should delete the requested article and return 204 if successful', () => {
+
+                    const articleId = 1
+                    return request(app)
+                        .delete(`/api/articles/${articleId}`)
+                        .expect(204)
+                        .then(() => {
+                            return db.query(`SELECT * FROM articles`)
+                        })
+                        .then(({
+                            rows
+                        }) => {
+                            expect(rows.length).toBe(11)
+                        })
+
+                });
+
+                it('Should return 404 if a valid Id format is given by not found', () => {
+
+                    const articleId = 120
+                    return request(app)
+                        .delete(`/api/articles/${articleId}`)
+                        .expect(404)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+                            expect(message).toBe("Not Found")
+                        })
+
+                });
+
+                it('Should return 400 if an invalid Id format is given ', () => {
+
+                    const articleId = "wrong"
+                    return request(app)
+                        .delete(`/api/articles/${articleId}`)
+                        .expect(400)
+                        .then(({
+                            body: {
+                                message
+                            }
+                        }) => {
+                            expect(message).toBe("Invalid Request")
+                        })
+
+                });
+
+            });
+
+            describe('POST', () => {
 
                 it('should return method not allowed', () => {
 

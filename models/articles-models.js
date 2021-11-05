@@ -326,3 +326,30 @@ exports.insertArticle = async (author, title, body, topic) => {
 
     return article
 }
+
+
+exports.removeArticleById = async (id) => {
+
+    //Check if ID is valid
+    if (!Number.isInteger(Number(id)) || isNaN(Number(id))) {
+        return Promise.reject({
+            status: 400,
+            message: "Invalid Request"
+        })
+    }
+
+    const {
+        rows: deletedArticle
+    } = await db.query(`DELETE FROM articles WHERE article_id = $1 RETURNING *;`, [id])
+
+    if (deletedArticle.length === 0 || !deletedArticle) {
+
+        return Promise.reject({
+            status: 404,
+            message: "Not Found"
+        })
+    }
+
+    return
+
+}

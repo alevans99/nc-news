@@ -4,7 +4,8 @@ const {
     selectArticles,
     selectCommentsByArticleId,
     insertCommentToArticleId,
-    insertArticle
+    insertArticle,
+    removeArticleById
 } = require("../models/articles-models")
 
 
@@ -173,4 +174,21 @@ exports.postArticle = async (req, res, next) => {
         next(err)
     }
 
+}
+
+
+exports.deleteArticleById = async (req, res, next) => {
+
+    try {
+        const {
+            id
+        } = req.params;
+
+        await removeArticleById(id)
+
+        res.status(204).send()
+
+    } catch (err) {
+        next(err)
+    }
 }
