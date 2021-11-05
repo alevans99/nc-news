@@ -199,7 +199,7 @@ describe('App.js', () => {
                         }
                     }) => {
 
-                        expect(articles).toHaveLength(12)
+                        expect(articles).toHaveLength(10)
 
                         articles.forEach((article) => {
 
@@ -235,7 +235,7 @@ describe('App.js', () => {
                         }
                     }) => {
 
-                        expect(articles).toHaveLength(12)
+                        expect(articles).toHaveLength(10)
                         expect(articles).toBeSortedBy('created_at', {
                             descending: true
                         })
@@ -255,7 +255,7 @@ describe('App.js', () => {
                         }
                     }) => {
 
-                        expect(articles).toHaveLength(12)
+                        expect(articles).toHaveLength(10)
                         expect(articles).toBeSortedBy('author', {
                             descending: true
                         })
@@ -275,7 +275,7 @@ describe('App.js', () => {
                         }
                     }) => {
 
-                        expect(articles).toHaveLength(12)
+                        expect(articles).toHaveLength(10)
                         expect(articles).toBeSortedBy('title')
                     });
 
@@ -297,7 +297,75 @@ describe('App.js', () => {
                             return article.topic === 'cats'
                         })
 
-                        expect(articles).toEqual(filteredArticles)
+                        expect(articles).toEqual(filteredArticles.slice(0, 10))
+                    });
+
+
+            });
+
+            it('Should take a topic query that allows you to limit the number of results', () => {
+
+                return request(app)
+                    .get(`/api/articles?limit=2`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+
+                        expect(articles).toHaveLength(2)
+                    });
+
+
+            });
+
+            it('The number of results should be limited to 10 by default', () => {
+
+                return request(app)
+                    .get(`/api/articles`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+
+                        expect(articles).toHaveLength(10)
+                    });
+
+
+            });
+
+            it('Larger limits should return the total number is a higher number is requested', () => {
+
+                return request(app)
+                    .get(`/api/articles?limit=20`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            articles
+                        }
+                    }) => {
+
+                        expect(articles).toHaveLength(12)
+                    });
+
+
+            });
+
+            it('Should return 400 if an invalid limit type is provided', () => {
+
+                return request(app)
+                    .get(`/api/articles?limit=wrong`)
+                    .expect(400)
+                    .then(({
+                        body: {
+                            message
+                        }
+                    }) => {
+
+                        expect(message).toBe("Invalid Request")
                     });
 
 

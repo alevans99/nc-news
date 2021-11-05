@@ -1,7 +1,7 @@
 const db = require('../db/connection.js');
 
 //Return all articles from the DB
-exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) => {
+exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, limit = '10') => {
 
     const acceptedSortCriteria = [
         'author',
@@ -35,7 +35,7 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
 
     }
     let topicQuery = ""
-    let topicParams = []
+    let queryParams = []
 
 
     if (topic) {
@@ -46,19 +46,32 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic) =>
             })
         }
         topicQuery = `WHERE articles.topic = $1 `
-        topicParams.push(topic)
+        queryParams.push(topic)
     }
+
+
+    //Check limit is an integer
+    if (isNaN(Number(limit)) || !Number.isInteger(Number(limit))) {
+
+        return Promise.reject({
+            status: 400,
+            message: "Invalid Request"
+        })
+    }
+
+    let limitQuery = `LIMIT $${queryParams.length + 1}`
+    queryParams.push(Number(limit))
 
 
     const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
     LEFT JOIN comments ON articles.article_id = comments.article_id ${topicQuery} 
-    GROUP BY articles.article_id ORDER BY articles.${sortBy} ${order.toUpperCase()};`
+    GROUP BY articles.article_id ORDER BY articles.${sortBy} ${order.toUpperCase()} ${limitQuery};`
 
 
 
     const {
         rows: articles
-    } = await db.query(queryString, topicParams)
+    } = await db.query(queryString, queryParams)
 
 
 
