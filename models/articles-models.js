@@ -97,7 +97,7 @@ exports.selectArticleById = async (id) => {
 }
 
 //Update the number of votes for a single article and return it
-exports.updateArticleById = async (id, changeVotes) => {
+exports.updateArticleById = async (id, votesToChange) => {
 
 
 
@@ -109,17 +109,17 @@ exports.updateArticleById = async (id, changeVotes) => {
     }
 
     //Only update if a request body has been provided
-    if (changeVotes) {
+    if (votesToChange) {
 
         //Only allow Integers to be passed to the DB
-        if (!Number.isInteger(Number(changeVotes))) {
+        if (!Number.isInteger(Number(votesToChange))) {
             return Promise.reject({
                 status: 400,
                 message: "Invalid Request"
             })
         }
 
-        await db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2;`, [changeVotes, id])
+        await db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2;`, [votesToChange, id])
     }
 
 
