@@ -21,11 +21,9 @@ exports.getArticles = async (req, res, next) => {
         } = req.query;
 
 
-        const articles = await selectArticles(sortBy, order, topic, limit, page)
+        const articlesAndCount = await selectArticles(sortBy, order, topic, limit, page)
 
-        res.status(200).send({
-            articles
-        })
+        res.status(200).send(articlesAndCount)
     } catch (err) {
         next(err)
     }

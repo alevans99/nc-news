@@ -223,6 +223,22 @@ describe('App.js', () => {
 
             });
 
+            it('should return a total_count property which provides the total number of articles disregarding limits', () => {
+
+                return request(app)
+                    .get(`/api/articles?limit=2`)
+                    .expect(200)
+                    .then(({
+                        body: {
+                            total_count
+                        }
+                    }) => {
+
+                        expect(total_count).toBe(12)
+
+                    });
+
+            });
 
             it('should sort by date by default', () => {
 

@@ -3,6 +3,12 @@ const db = require('../db/connection.js');
 //Return all articles from the DB
 exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, limit = '10', page = '1') => {
 
+    //stores optional params for the main DB query
+    let queryParams = []
+    //stores optional params for the secondary DB query
+    let totalArticlesQueryParams = []
+
+    //Contain the accepted criteria to check user input against
     const acceptedSortCriteria = [
         'author',
         'title',
@@ -26,6 +32,8 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, li
         return topic.slug
     })
 
+
+    //Check sortBy and Order for invalid requests
     if (!acceptedSortCriteria.includes(sortBy) || !acceptedOrderCriteria.includes(order.toUpperCase())) {
 
         return Promise.reject({
@@ -34,9 +42,9 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, li
         })
 
     }
-    let topicQuery = ""
-    let queryParams = []
 
+    //Populate the topicQuery if the user has requested results filtered by topic
+    let topicQuery = ""
 
     if (topic) {
         if (!acceptedTopics.includes(topic)) {
@@ -47,6 +55,7 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, li
         }
         topicQuery = `WHERE articles.topic = $1 `
         queryParams.push(topic)
+        totalArticlesQueryParams.push(topic)
     }
 
 
@@ -60,6 +69,7 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, li
         })
     }
 
+    //Setup limits and offsets based on default or user requests
     let limitQuery = `LIMIT $${queryParams.length + 1}`
     queryParams.push(Number(limit))
 
@@ -68,19 +78,30 @@ exports.selectArticles = async (sortBy = `created_at`, order = 'DESC', topic, li
     queryParams.push(pageOffset)
 
 
+
+    //Main DB query to get the article objects based on above filters
     const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
     LEFT JOIN comments ON articles.article_id = comments.article_id ${topicQuery} 
     GROUP BY articles.article_id ORDER BY articles.${sortBy} ${order.toUpperCase()} ${limitQuery} ${offsetQuery};`
-
-
 
     const {
         rows: articles
     } = await db.query(queryString, queryParams)
 
 
+    //Secondary request to get total number of articles disregarding limits/offsets
+    const totalArticlesQuery = `SELECT * FROM articles ${topicQuery};`
 
-    return articles
+    const {
+        rows: totalArticlesForRequest
+    } = await db.query(totalArticlesQuery, totalArticlesQueryParams)
+
+
+
+    return {
+        articles,
+        total_count: totalArticlesForRequest.length
+    }
 
 }
 
