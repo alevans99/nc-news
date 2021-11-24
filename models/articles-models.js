@@ -215,7 +215,16 @@ exports.selectCommentsByArticleId = async (id, limit = '10', page = '1') => {
     queryParams
   );
 
-  return comments;
+  //Secondary request to get total number of comments disregarding limits/offsets
+  const totalCommentsQuery = `SELECT * FROM comments WHERE article_id = $1;`;
+
+  const { rows: totalCommentsForRequest } = await db.query(totalCommentsQuery, [
+    id,
+  ]);
+  return {
+    comments,
+    total_count: totalCommentsForRequest.length,
+  };
 };
 
 //Add a new comment for a single article
