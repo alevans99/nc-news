@@ -1,46 +1,46 @@
 const {
-    selectUsers,
-    selectUserByUsername
-} = require("../models/users-models")
+  selectUsers,
+  selectUserByUsername,
+  selectCommentsByUsername,
+} = require('../models/users-models');
 
 exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await selectUsers();
 
-    try {
-
-        const users = await selectUsers()
-
-        res.status(200).send({
-            users
-        })
-
-    } catch (err) {
-        next(err)
-    }
-
-
-
-}
-
+    res.status(200).send({
+      users,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 exports.getUserByUsername = async (req, res, next) => {
+  try {
+    const { username } = req.params;
 
-    try {
+    const user = await selectUserByUsername(username);
 
-        const {
-            username
-        } = req.params;
+    res.status(200).send({
+      user,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
+exports.getCommentsByUsername = async (req, res, next) => {
+  try {
+    const { username } = req.params;
 
-        const user = await selectUserByUsername(username)
+    const { comments, total_count } = await selectCommentsByUsername(username);
 
-        res.status(200).send({
-            user
-        })
-
-    } catch (err) {
-        next(err)
-    }
-
-
-
-}
+    res.status(200).send({
+      comments,
+      total_count,
+    });
+  } catch (err) {
+    next(err);
+  }
+};

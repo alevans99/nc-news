@@ -1,25 +1,20 @@
 const usersRouter = require('express').Router();
-const {
-    methodNotAllowed,
-
-} = require("../controllers/error-controllers")
+const { methodNotAllowed } = require('../controllers/error-controllers');
 
 const {
-    getUsers,
-    getUserByUsername
-} = require("../controllers/users-controllers")
+  getUsers,
+  getUserByUsername,
+  getCommentsByUsername,
+} = require('../controllers/users-controllers');
 
 //Routes('api/users/')
-usersRouter
-    .route("/")
-    .get(getUsers)
-    .all(methodNotAllowed)
+usersRouter.route('/').get(getUsers).all(methodNotAllowed);
 
+usersRouter.route('/:username').get(getUserByUsername).all(methodNotAllowed);
 
 usersRouter
-    .route("/:username")
-    .get(getUserByUsername)
-    .all(methodNotAllowed)
+  .route('/:username/comments')
+  .get(getCommentsByUsername)
+  .all(methodNotAllowed);
 
-
-module.exports = usersRouter
+module.exports = usersRouter;
