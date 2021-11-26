@@ -2,6 +2,7 @@ const {
   selectUsers,
   selectUserByUsername,
   selectCommentsByUsername,
+  selectArticlesByUsername,
 } = require('../models/users-models');
 
 exports.getUsers = async (req, res, next) => {
@@ -38,6 +39,21 @@ exports.getCommentsByUsername = async (req, res, next) => {
 
     res.status(200).send({
       comments,
+      total_count,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getArticlesByUsername = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+
+    const { articles, total_count } = await selectArticlesByUsername(username);
+
+    res.status(200).send({
+      articles,
       total_count,
     });
   } catch (err) {

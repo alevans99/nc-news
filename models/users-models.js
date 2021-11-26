@@ -98,3 +98,62 @@ exports.selectCommentsByUsername = async (
     total_count: totalCommentsForRequest.length,
   };
 };
+
+//Return a single article from the DB
+exports.selectArticlesByUsername = async (
+  username,
+  limit = '10',
+  page = '1'
+) => {
+  //Check username is correct format
+  if (typeof username !== 'string') {
+    await Promise.reject({
+      status: 400,
+      message: 'Invalid Request',
+    });
+  }
+
+  //Check the user exists
+  const { rows: validUsers } = await db.query(
+    `SELECT username FROM users WHERE username = $1;`,
+    [username]
+  );
+
+  if (validUsers.length !== 1) {
+    return Promise.reject({
+      status: 404,
+      message: 'Not Found',
+    });
+  }
+
+  //Collect params needed for the DB query
+  const queryParams = [username];
+
+  //Setup limits and offsets based on default or user requests
+  let limitQuery = `LIMIT $${queryParams.length + 1}`;
+  queryParams.push(Number(limit));
+
+  let pageOffset = Number(limit * (page - 1));
+  let offsetQuery = `OFFSET $${queryParams.length + 1}`;
+  queryParams.push(pageOffset);
+
+  //Create the query
+
+  const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
+  LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.author = $1
+  GROUP BY articles.article_id ORDER BY created_at DESC ${limitQuery} ${offsetQuery};`;
+
+  const { rows: articles } = await db.query(queryString, queryParams);
+
+  //Secondary request to get total number of comments disregarding limits/offsets
+  const totalArticlesQuery = `SELECT * FROM articles WHERE author = $1;`;
+
+  const { rows: totalArticlesForRequest } = await db.query(totalArticlesQuery, [
+    username,
+  ]);
+
+  return {
+    articles,
+    total_count: totalArticlesForRequest.length,
+  };
+};
