@@ -34,8 +34,13 @@ exports.getUserByUsername = async (req, res, next) => {
 exports.getCommentsByUsername = async (req, res, next) => {
   try {
     const { username } = req.params;
+    const { p: page } = req.query;
 
-    const { comments, total_count } = await selectCommentsByUsername(username);
+    const { comments, total_count } = await selectCommentsByUsername(
+      username,
+      10,
+      page
+    );
 
     res.status(200).send({
       comments,
