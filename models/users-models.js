@@ -82,7 +82,7 @@ exports.selectCommentsByUsername = async (
   queryParams.push(pageOffset);
 
   const { rows: comments } = await db.query(
-    `SELECT * FROM comments WHERE author = $1 ORDER BY created_at DESC ${limitQuery} ${offsetQuery};`,
+    `SELECT * FROM comments WHERE author = $1 ORDER BY comment_id DESC ${limitQuery} ${offsetQuery};`,
     queryParams
   );
 
@@ -141,7 +141,7 @@ exports.selectArticlesByUsername = async (
 
   const queryString = `SELECT articles.*, COUNT(comments.comment_id)::int AS comment_count FROM articles 
   LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.author = $1
-  GROUP BY articles.article_id ORDER BY created_at DESC ${limitQuery} ${offsetQuery};`;
+  GROUP BY articles.article_id ORDER BY article_id DESC ${limitQuery} ${offsetQuery};`;
 
   const { rows: articles } = await db.query(queryString, queryParams);
 
