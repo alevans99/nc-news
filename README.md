@@ -1,6 +1,20 @@
-# Northcoders News API
+# NC News API
 
-A backend for a Reddit-like news service. The project provides an API to serve articles, comments, users and topics as well as updating votes and comments.
+NC News is a social news aggregation, web content rating, and discussion website.
+
+NC News has articles which are divided into topics. Each article has user curated ratings and can be up or down voted using the API. Users can also add comments about an article, as well as submitting their own articles and creating new topics.
+
+The NC News API provides a backend for a Reddit-like news service. The API serves articles, comments, users and topics as well as updating votes and comments.
+
+## About the Project
+
+NC News is the combination of two projects created during my training as a Junior Full-Stack Developer. The projects were split into two separate sprints, firstly the backend for the app was created to provide a RESTful API to allow the website functionality.
+
+The second sprint added a frontend to the project using React.
+
+You can visit the frontend project here: [https://github.com/alevans99/nc-news-fe](https://github.com/alevans99/nc-news-fe)
+
+Visit a hosted version of the website here: [https://nc-news-ae.netlify.app](https://nc-news-ae.netlify.app)
 
 ## Setup
 
