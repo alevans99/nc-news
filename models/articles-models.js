@@ -211,7 +211,7 @@ exports.selectCommentsByArticleId = async (id, limit = '10', page = '1') => {
   }
 
   const { rows: comments } = await db.query(
-    `SELECT * FROM comments WHERE article_id = $1 ORDER BY comment_id DESC ${limitQuery} ${offsetQuery};`,
+    `SELECT * FROM comments WHERE article_id = $1 ORDER BY comment_id ASC ${limitQuery} ${offsetQuery};`,
     queryParams
   );
 

@@ -6,10 +6,14 @@
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
+    "test-seed": "node ./db/seeds/run-test-seed.js",
     "test": "jest",
     "seed:prod": "NODE_ENV=production DATABASE_URL=$(heroku config:get DATABASE_URL) npm run seed",
     "start": "node listen.js",
-    "test-insomnia": "NODE_ENV=test npm run seed && node listen.js"
+    "test-insomnia": "NODE_ENV=test npm run test-seed && node listen.js",
+    "test-insomnia-windows": "SET NODE_ENV=test&& npm run test-seed && node listen.js",
+    "seed:prod-windows": "SET NODE_ENV=production&& SET DATABASE_URL=$(heroku config:get DATABASE_URL)&& npm run seed",
+    "seed:railway": "SET NODE_ENV=railway&& npm run seed"
   },
   "repository": {
     "type": "git",
